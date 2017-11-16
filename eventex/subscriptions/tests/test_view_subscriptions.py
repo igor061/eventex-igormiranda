@@ -1,5 +1,6 @@
 from django.core import mail
 from django.test import TestCase
+
 from eventex.subscriptions.forms import SubscriptionForm
 from eventex.subscriptions.models import Subscription
 
@@ -49,8 +50,8 @@ class SubscribePostValid(TestCase):
         self.resp = self.client.post('/inscricao/', self.data)
 
     def test_post(self):
-        """Valid post should redirect ti /inscricao/"""
-        self.assertEqual(302, self.resp.status_code)
+        """Valid post should redirect ti /inscricao/id"""
+        self.assertRedirects(self.resp, '/inscricao/1/')
 
     def test_send_subscribe_email(self):
         self.assertEqual(1, len(mail.outbox))
@@ -83,12 +84,5 @@ class SubscribePostInvalid(TestCase):
     def test_dont_save_sbuscription(self):
         self.assertFalse(Subscription.objects.exists())
 
-
-class SubscribeSuccessMessage(TestCase):
-    def test_message(self):
-        self.data = dict(name='Igor Miranda', cpf='12345678901', email='igor061@gmail.com', phone='61-99999-9999')
-
-        self.response = self.client.post('/inscricao/', self.data, follow=True)
-        self.assertContains(self.response, 'Inscrição realizada com sucesso!')
 
 
